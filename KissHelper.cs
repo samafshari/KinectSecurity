@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Kinect;
+using System.Diagnostics;
 
 namespace Kiss
 {
@@ -19,10 +20,10 @@ namespace Kiss
         byte[] colorPixels;
         Skeleton[] skeletons;
         int dataAge;
-        DispatcherTimer timer;
-        int trackedCount;
+        public DispatcherTimer Timer { get; private set; }
+        public int TrackedSkeletonsCount { get; private set; }
 
-        public Action OnCapture;
+        public Action<object> OnCapture;
 
         public static string GetPath()
         {
@@ -57,10 +58,10 @@ namespace Kiss
 
             if (Sensor == null) throw new Exception("Sensor not found.");
 
-            timer = new DispatcherTimer();
-            timer.Tick += timer_Tick;
-            timer.Interval = new TimeSpan(0, 0, 0, 0, Properties.Settings.Default.TickMsec);
-            timer.Start();
+            Timer = new DispatcherTimer();
+            Timer.Tick += timer_Tick;
+            Timer.Interval = new TimeSpan(0, 0, 0, 0, Properties.Settings.Default.TickMsec);
+            Timer.Start();
 
             Sensor.SkeletonStream.Enable();
             Sensor.SkeletonStream.TrackingMode = SkeletonTrackingMode.Seated;
@@ -79,12 +80,14 @@ namespace Kiss
 
         void Sensor_SkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
         {
-            var frame = e.OpenSkeletonFrame();
-            if (frame != null)
+            using (var frame = e.OpenSkeletonFrame())
             {
-                dataAge = 0;
-                skeletons = new Skeleton[frame.SkeletonArrayLength];
-                frame.CopySkeletonDataTo(skeletons);
+                if (frame != null)
+                {
+                    dataAge = 0;
+                    skeletons = new Skeleton[frame.SkeletonArrayLength];
+                    frame.CopySkeletonDataTo(skeletons);
+                }
             }
         }
 
@@ -102,18 +105,19 @@ namespace Kiss
 
         void timer_Tick(object sender, EventArgs e)
         {
-            trackedCount = 0;
+            TrackedSkeletonsCount = 0;
 
             if (dataAge++ < Properties.Settings.Default.MaxEmptyFrames)
             {
                 if (skeletons == null) return;
+                
                 foreach (var item in skeletons)
-                    if (item.TrackingState == SkeletonTrackingState.Tracked) trackedCount++;
+                    if (item.TrackingState == SkeletonTrackingState.Tracked) TrackedSkeletonsCount++;
             }
 
-            if (trackedCount > 0 && !Sensor.ColorStream.IsEnabled)
+            if (TrackedSkeletonsCount > 0 && !Sensor.ColorStream.IsEnabled)
                 Sensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
-            else if (trackedCount == 0 && Sensor.ColorStream.IsEnabled)
+            else if (TrackedSkeletonsCount == 0 && Sensor.ColorStream.IsEnabled)
                 Sensor.ColorStream.Disable();
 
             if (Sensor.ColorStream.IsEnabled) ShootFrame();
@@ -121,7 +125,7 @@ namespace Kiss
 
         public void ShootFrame()
         {
-            if (Sensor != null) return;
+            if (Sensor == null) return;
 
             BitmapEncoder encoder = new JpegBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(ColorBitmap));
@@ -130,21 +134,22 @@ namespace Kiss
             string myPhotos = KissHelper.GetPath();
             string path = Path.Combine(myPhotos, "kiss-" + time + ".jpg");
 
+            string result = "";
             // write the new file to disk
             try
             {
                 using (FileStream fs = new FileStream(path, FileMode.Create)) encoder.Save(fs);
-                //this.statusBarText.Text = string.Format(CultureInfo.InvariantCulture, "{0} {1}", Properties.Resources.ScreenshotWriteSuccess, path);
+                result = string.Format(CultureInfo.InvariantCulture, "{0} {1}", Properties.Resources.ScreenshotWriteSuccess, path);
             }
             catch (IOException)
             {
-                //this.statusBarText.Text = string.Format(CultureInfo.InvariantCulture, "{0} {1}", Properties.Resources.ScreenshotWriteFailed, path);
+                result = string.Format(CultureInfo.InvariantCulture, "{0} {1}", Properties.Resources.ScreenshotWriteFailed, path);
             }
 
-            if (OnCapture != null) OnCapture();
+            if (OnCapture != null) OnCapture(result);
         }
 
-        public ~KissHelper()
+        ~KissHelper()
         {
             if (Sensor != null) Sensor.Stop();
         }
