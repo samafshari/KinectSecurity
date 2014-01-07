@@ -8,8 +8,8 @@
     <ProjectGuid>{49EA2D7C-A2D2-42F0-A447-966AFFD19E42}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.Samples.Kinect.ColorBasics</RootNamespace>
-    <AssemblyName>ColorBasics-WPF</AssemblyName>
+    <RootNamespace>Kiss</RootNamespace>
+    <AssemblyName>Kiss</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -37,6 +37,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Images\Kinect.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Kiss.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Kinect">
@@ -69,6 +72,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="KissHelper.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -92,6 +96,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
