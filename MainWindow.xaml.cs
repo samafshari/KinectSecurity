@@ -1,6 +1,6 @@
 ﻿//------------------------------------------------------------------------------
 //
-// Kinect Security System / KISS - Based on ColorBasics code from Kinect Toolbox
+// Kinect Security System / KISS - Based on ColorBasics code from Kinect Toolkit
 //
 // January 2014, Saeed Afshari saeed@saeedoo.com
 //
