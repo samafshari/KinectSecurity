@@ -47,7 +47,7 @@ namespace Kiss
             }
 
             timer.Tick += timer_Tick;
-            timer.Interval = new TimeSpan(0,0,0,1,100);
+            timer.Interval = new TimeSpan(0,0,0,0,Properties.Settings.Default.TickMsec);
             timer.Start();
 
             if (null != this.sensor)
@@ -56,8 +56,8 @@ namespace Kiss
                 sensor.SkeletonStream.TrackingMode = SkeletonTrackingMode.Seated;
 
                 this.sensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
-                this.colorPixels = new byte[this.sensor.ColorStream.FramePixelDataLength];
-                this.colorBitmap = new WriteableBitmap(this.sensor.ColorStream.FrameWidth, this.sensor.ColorStream.FrameHeight, 8.0, 8.0, PixelFormats.Bgr32, null);
+                this.colorPixels = new byte[sensor.ColorStream.FramePixelDataLength];
+                this.colorBitmap = new WriteableBitmap(sensor.ColorStream.FrameWidth, sensor.ColorStream.FrameHeight, 8.0, 8.0, PixelFormats.Bgr32, null);
                 this.Image.Source = this.colorBitmap;
 
                 this.sensor.ColorFrameReady += this.SensorColorFrameReady;
@@ -82,7 +82,7 @@ namespace Kiss
             this.Title = trackedCount.ToString();
             trackedCount = 0;
             
-            if (dataAge < 10)
+            if (dataAge < Properties.Settings.Default.MaxEmptyFrames)
             {
                 if (skeletons == null) return;
                 foreach (var item in skeletons)
@@ -145,7 +145,7 @@ namespace Kiss
             encoder.Frames.Add(BitmapFrame.Create(this.colorBitmap));
 
             string time = System.DateTime.Now.ToString("hh'-'mm'-'ss", CultureInfo.CurrentUICulture.DateTimeFormat);
-            string myPhotos = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures) + @"\KISS";
+            string myPhotos = KissHelper.GetPath();
             string path = Path.Combine(myPhotos, "kiss-" + time + ".jpg");
 
             // write the new file to disk

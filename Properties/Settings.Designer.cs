@@ -46,5 +46,29 @@ namespace Kiss.Properties {
                 this["FolderPath"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1000")]
+        public int TickMsec {
+            get {
+                return ((int)(this["TickMsec"]));
+            }
+            set {
+                this["TickMsec"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public int MaxEmptyFrames {
+            get {
+                return ((int)(this["MaxEmptyFrames"]));
+            }
+            set {
+                this["MaxEmptyFrames"] = value;
+            }
+        }
     }
 }
