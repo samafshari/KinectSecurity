@@ -13,8 +13,9 @@ namespace Kiss
     {
         public static KissHelper DefaultHelper = null;
 
-        public KinectSensor Sensor;
+        public KinectSensor Sensor { get; private set; }
         public WriteableBitmap ColorBitmap { get; private set; }
+
         byte[] colorPixels;
         Skeleton[] skeletons;
         int dataAge;
