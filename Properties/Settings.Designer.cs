@@ -49,10 +49,10 @@ namespace Kiss.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1000")]
-        public int TickMsec {
+        [global::System.Configuration.DefaultSettingValueAttribute("200")]
+        public double TickMsec {
             get {
-                return ((int)(this["TickMsec"]));
+                return ((double)(this["TickMsec"]));
             }
             set {
                 this["TickMsec"] = value;

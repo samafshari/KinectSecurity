@@ -35,13 +35,18 @@ namespace Kiss
 
         private void ButtonScreenshotClick(object sender, RoutedEventArgs e)
         {
-            kiss.ShootFrame();
+            kiss.ShootFrame(photo: true);
         }
 
         void OnCapture(object o)
         {
             this.statusBarText.Text = (string)o;
             Image.Source = kiss.ColorBitmap;
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            kiss.Stop();
         }
     }
 }
